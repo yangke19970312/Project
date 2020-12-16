@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 
 public class Scheduler {
 	private Node node;
@@ -16,17 +17,23 @@ public class Scheduler {
 	
 	// 模拟退火
 	public int anneal(int cr) {
-		double max_use = 0; //最大的资源利用率
-		double use = 0; //当前的资源利用率
-		double T = 100.0; //初始温度
-		double Tmin = 1; //终止温度
-		double r = 0.9999; //冷却速度
-		List<Pod> podList1 = new ArrayList<>(podList);
-		int n = podList1.size();
+		int n = podList.size();
 		while(true) {
+			double max_use = 0; //最大的资源利用率
+			double use = 0; //当前的资源利用率
+			double T = 100.0; //初始温度
+			double Tmin = 1; //终止温度
+			double r = 0.999; //冷却速度
+			
+			List<Pod> podList1 = new ArrayList<>(podList);
+			double freecpu = node.getTotalcpu() - node.getPrecpu();
+			double freeram = node.getTotalram() - node.getPreram();
+			
+//			System.out.println( node.getPrecpu()+"  "+ node.getPreram()+"  "+freecpu+"  "+freeram);
+			
 			while(T>Tmin) {
-				List<Pod> new_podList1 = new ArrayList<>(podList1);
-				Node node1 = new Node(node.getTotalcpu(),node.getTotalram());
+				List<Pod> new_podList1 = new ArrayList<>(podList1);			
+				Node node1 = new Node(freecpu, freeram);
 				int n1 = 0;
 				int n2 = 0;
 				Random rand = new Random();
@@ -49,6 +56,8 @@ public class Scheduler {
 					use = ur;
 				else  //综合考虑cpu和ram
 					use = 0.5*(uc+ur);
+								
+//				System.out.print(freecup+"  "+freeram+"  | "+use+"  "+max_use+"  | ");
 				
 				// 新的利用率大于当前max_use，则直接更新
 				if(use>max_use) {
@@ -64,6 +73,17 @@ public class Scheduler {
 				}
 				T = r*T;  //降低温度
 			}
+			
+//			System.out.println(node.getPrecpu()+"  "+node.getPreram());
+//			for(int i=0; i<n;i++) {
+//				System.out.print(podList1.get(i).getResquestcpu()+"  ");
+//			}
+//			System.out.println();
+//			for(int i=0; i<n;i++) {
+//				System.out.print(podList1.get(i).getResquestram()+"  ");
+//			}
+//			System.out.println();
+			
 			for (int i = 0; i<podList1.size();i++) {	//依次调入node
 				Pod apod = podList1.get(i);
 				if (!node.addPod(apod))
@@ -112,7 +132,7 @@ public class Scheduler {
 //		return fitnesses;
 //	}
 	
-	//这里用 以顺序执行模仿FCFS
+	//这里用以顺序执行模仿FCFS
 	public int FCFS() {
 		while(true) {
 			for (int i = 0; i<podList.size();i++) {	//依次调入node

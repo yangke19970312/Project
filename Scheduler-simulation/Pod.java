@@ -1,5 +1,8 @@
 package schedule;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Pod {
 	private double requestCpu; 
 	private double requestRam;	
@@ -9,11 +12,19 @@ public class Pod {
 	private Node bindNode;
 	private int state;// 1 为已经部署 0 为待部署
 	
+	private Map pod_label;
+	private Map pod_anti_affinity;
+	private Map pod_affinity;
+	
 	public Pod(double requestCpu, double requestRam) {
 		this.requestCpu = requestCpu;
 		this.limitsCpu = requestCpu;
 		this.requestRam = requestRam;
 		this.limitsRam = requestRam;
+		
+		this.pod_label = new HashMap();
+		this.pod_anti_affinity = new HashMap();		
+		this.pod_affinity = new HashMap();	
 	}
 	public boolean bindtoNode(Node node) {
 		this.bindNode = node;

@@ -37,23 +37,30 @@ public class FinalTest {
 				podList2.add(new Pod(cpu,ram));
 			}	*/
 				Scheduler s = new Scheduler(podList1, node1);
-				//s.FCFS();	//先来先服务
+				
+				long startTime=System.currentTimeMillis();
+				
+//				s.FCFS();	//先来先服务
 				//s.RND();	//随机调度
 				//s.DRF();  //DRF
-				s.anneal(0);
+				s.anneal(0); //模拟退火
+				
+				long endTime=System.currentTimeMillis();
 				
 				System.setOut(out);
 				System.out.print("NodeSize:"+50*j+"  ");
 				int count = node1.getcount();
+				long time = endTime-startTime;
 				double uc =node1.getUtilizationofCpu();
 				double ur =node1.getUtilizationofRam();
 				System.out.printf("cpu利用率："+"%.3f"+",  ",uc);
 				System.out.printf("ram利用率："+"%.3f"+",  ",ur);
-				System.out.printf("pod数："+"%d", count);
+				System.out.printf("pod数："+"%d"+",  ", count);
+				System.out.printf("所用时间：" + time + "ms");
 				System.out.println();
 				
 				System.setOut(mytxt);
-				System.out.printf("%d %.3f %.3f", 50*j,uc,ur);
+				System.out.printf("%d %.3f %.3f %d %d", 50*j,uc,ur,count,time);
 				System.out.println();
 				
 		}
